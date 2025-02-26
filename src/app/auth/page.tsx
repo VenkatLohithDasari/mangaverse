@@ -6,9 +6,10 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useState } from 'react';
 import { FaDiscord } from 'react-icons/fa';
-import { BiErrorCircle } from 'react-icons/bi';
-import { ImSpinner8 } from 'react-icons/im';
-import Image from 'next/image';
+import { IoWarningOutline } from 'react-icons/io5';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import BaseLayout from '@/components/layout/BaseLayout';
 
 export default function AuthPage() {
     const searchParams = useSearchParams();
@@ -37,89 +38,60 @@ export default function AuthPage() {
     };
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-neutral-900 px-4">
-            <div className="w-full max-w-md">
-                {/* Logo Section */}
-                <div className="mb-8 text-center">
-                    {/* Replace with your actual logo */}
-                    <div className="mx-auto h-16 w-16 rounded-full bg-purple-800 flex items-center justify-center">
-                        <span className="text-2xl font-bold text-white">MR</span>
-                    </div>
-                    <h1 className="mt-4 text-3xl font-bold text-white">Manga Reader</h1>
-                    <p className="mt-2 text-neutral-400">Your personal manga collection</p>
-                </div>
-
-                {/* Auth Card */}
-                <div className="overflow-hidden rounded-xl bg-neutral-700 shadow-lg">
-                    {/* Card Header */}
-                    <div className="border-b border-neutral-600 bg-neutral-800 px-6 py-4">
-                        <h2 className="text-lg font-medium text-white">Sign in to continue</h2>
+        <BaseLayout>
+            <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
+                <Card className="w-full max-w-md p-8 space-y-8">
+                    <div className="text-center">
+                        <h1 className="text-3xl font-bold tracking-tight text-text-primary">
+                            Welcome to Manga Reader
+                        </h1>
+                        <p className="mt-2 text-text-secondary">
+                            Sign in to access your manga collection
+                        </p>
                     </div>
 
-                    {/* Card Body */}
-                    <div className="p-6">
-                        {/* Error Message */}
-                        {error && (
-                            <div className="mb-6 rounded-lg bg-red-900/20 p-4">
-                                <div className="flex">
-                                    <BiErrorCircle className="h-5 w-5 text-red-500" />
-                                    <div className="ml-3">
-                                        <p className="text-sm text-red-300">
-                                            {getErrorMessage(error)}
-                                        </p>
-                                    </div>
+                    {error && (
+                        <div className="rounded-md bg-status-error/10 p-4">
+                            <div className="flex items-start">
+                                <div className="flex-shrink-0 pt-0.5">
+                                    <IoWarningOutline className="h-5 w-5 text-status-error" />
+                                </div>
+                                <div className="ml-3">
+                                    <p className="text-sm text-status-error">
+                                        {getErrorMessage(error)}
+                                    </p>
                                 </div>
                             </div>
-                        )}
-
-                        {/* Sign-in Button */}
-                        <button
-                            onClick={handleSignIn}
-                            disabled={isLoading}
-                            className={`flex w-full items-center justify-center gap-3 rounded-lg
-                ${isLoading ? 'bg-purple-900 cursor-not-allowed' :
-                                'bg-purple-800 hover:bg-purple-700 active:bg-purple-900'}
-                px-4 py-3.5 text-white transition-colors duration-200`}
-                        >
-                            {isLoading ? (
-                                <>
-                                    <ImSpinner8 className="h-5 w-5 animate-spin" />
-                                    <span>Connecting to Discord...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <FaDiscord className="h-5 w-5" />
-                                    <span>Continue with Discord</span>
-                                </>
-                            )}
-                        </button>
-
-                        {/* Terms & Privacy */}
-                        <div className="mt-6 text-center">
-                            <p className="text-sm text-neutral-400">
-                                By signing in, you agree to our{' '}
-                                <Link href="/terms" className="text-purple-400 hover:text-purple-300 transition-colors">
-                                    Terms of Service
-                                </Link>{' '}
-                                and{' '}
-                                <Link href="/privacy" className="text-purple-400 hover:text-purple-300 transition-colors">
-                                    Privacy Policy
-                                </Link>
-                            </p>
                         </div>
-                    </div>
-                </div>
+                    )}
 
-                {/* Guest Access */}
-                <div className="mt-6 text-center">
-                    <button
-                        onClick={() => window.location.href = '/explore'}
-                        className="text-sm text-neutral-400 hover:text-white transition-colors"
-                    >
-                        Continue as guest
-                    </button>
-                </div>
+                    <div className="space-y-4">
+                        <Button
+                            variant="primary"
+                            fullWidth
+                            icon={FaDiscord}
+                            isLoading={isLoading}
+                            onClick={handleSignIn}
+                            type="button"
+                        >
+                            {isLoading ? 'Connecting to Discord...' : 'Sign in with Discord'}
+                        </Button>
+                    </div>
+
+                    <div className="text-center">
+                        <p className="text-sm text-text-tertiary">
+                            By signing in, you agree to our{' '}
+                            <Link href="/terms" className="text-brand-light hover:text-text-primary transition-colors">
+                                Terms of Service
+                            </Link>{' '}
+                            and{' '}
+                            <Link href="/privacy" className="text-brand-light hover:text-text-primary transition-colors">
+                                Privacy Policy
+                            </Link>
+                        </p>
+                    </div>
+                </Card>
             </div>
-        </div>
+        </BaseLayout>
     );
 }
