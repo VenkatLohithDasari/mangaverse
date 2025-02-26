@@ -1,0 +1,44 @@
+import type { Config } from "tailwindcss";
+
+export default {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // Base background
+        background: {
+          DEFAULT: '#171717', // neutral-900
+        },
+        // Card/container backgrounds
+        surface: {
+          DEFAULT: '#404040', // neutral-700
+          dark: '#262626', // neutral-800
+        },
+        // Primary brand color
+        primary: {
+          DEFAULT: '#6b21a8', // purple-800
+          light: '#7e22ce', // purple-700 (for hover states)
+          dark: '#581c87', // purple-900 (for pressed states)
+        },
+        // Text colors
+        content: {
+          primary: '#ffffff', // white text
+          secondary: '#d4d4d4', // neutral-300 (for secondary text)
+          muted: '#a3a3a3', // neutral-400 (for less important text)
+        },
+        // Status colors (use sparingly)
+        status: {
+          success: '#16a34a', // green-600
+          error: '#dc2626', // red-600
+          warning: '#d97706', // amber-600
+          info: '#2563eb', // blue-600
+        }
+      },
+    },
+  },
+  plugins: [],
+} satisfies Config;
