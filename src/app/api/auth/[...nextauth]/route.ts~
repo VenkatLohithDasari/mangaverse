@@ -1,0 +1,69 @@
+import NextAuth from 'next-auth';
+import DiscordProvider from 'next-auth/providers/discord';
+import { MongoDBAdapter } from '@auth/mongodb-adapter';
+import clientPromise from '@/lib/mongodb';
+import User from '@/models/User';
+import dbConnect from '@/lib/mongoose';
+
+export const authOptions = {
+    providers: [
+        DiscordProvider({
+            clientId: process.env.DISCORD_CLIENT_ID!,
+            clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+            authorization: { params: { scope: 'identify email' } },
+        }),
+    ],
+    adapter: MongoDBAdapter(clientPromise),
+    callbacks: {
+        async session({ session, user }) {
+            // Connect to mongoose to use our model
+            await dbConnect();
+
+            // Find the user in our database
+            const dbUser = await User.findById(user.id);
+
+            // Add custom user properties to the session
+            if (dbUser) {
+                session.user.id = dbUser._id.toString();
+                session.user.role = dbUser.role;
+                session.user.discordId = dbUser.discordId;
+                session.user.username = dbUser.username;
+            }
+
+            return session;
+        },
+        async signIn({ profile, account }) {
+            if (account?.provider === 'discord' && profile) {
+                await dbConnect();
+
+                // Check if user exists
+                const discordUser = profile as any;
+                let user = await User.findOne({ discordId: discordUser.id });
+
+                // Create user if they don't exist
+                if (!user) {
+                    user = await User.create({
+                        discordId: discordUser.id,
+                        username: discordUser.username,
+                        discriminator: discordUser.discriminator || '',
+                        email: discordUser.email,
+                        name: discordUser.global_name || discordUser.username,
+                        image: discordUser.image_url || `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`,
+                    });
+                }
+            }
+
+            return true;
+        },
+    },
+    pages: {
+        signIn: '/auth',
+    },
+    session: {
+        strategy: 'jwt',
+    },
+    secret: process.env.NEXTAUTH_SECRET,
+};
+
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };

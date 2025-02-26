@@ -9,7 +9,7 @@ export interface IUser {
     emailVerified?: Date;
     discordId: string;
     username: string;
-    discriminator: string;
+    discriminator?: string;
     role: 'user' | 'admin';
     createdAt: Date;
     updatedAt: Date;
