@@ -1,3 +1,38 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        @apply bg-background-primary text-text-primary;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+        @apply w-2;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-background-primary;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-background-elevated rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-background-tertiary;
+    }
+}
+
+@layer components {
+    /* Add any component styles here */
+}
+
+@layer utilities {
+    /* Add any utility styles here */
+}
