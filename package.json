@@ -12,6 +12,7 @@
     "@auth/mongodb-adapter": "^3.7.4",
     "mongodb": "^6.13.1",
     "mongoose": "^8.10.1",
+    "mongoose-slug-generator": "^1.0.4",
     "next": "15.1.7",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",

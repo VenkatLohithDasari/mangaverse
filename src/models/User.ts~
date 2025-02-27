@@ -1,16 +1,17 @@
-// models/User.ts
+// models/User.ts (extending your existing model)
 import mongoose, { Schema, model, Model } from 'mongoose';
 
 export interface IUser {
-    _id: string;
+    _id: mongoose.Types.ObjectId;
     name?: string;
     email?: string;
     image?: string;
     emailVerified?: Date;
     discordId: string;
     username: string;
-    discriminator: string;
+    discriminator?: string;
     role: 'user' | 'admin';
+    favorites: mongoose.Types.ObjectId[]; // Array of manga IDs
     createdAt: Date;
     updatedAt: Date;
 }
@@ -25,6 +26,7 @@ const UserSchema = new Schema<IUser>(
         username: { type: String, required: true },
         discriminator: String,
         role: { type: String, enum: ['user', 'admin'], default: 'user' },
+        favorites: [{ type: Schema.Types.ObjectId, ref: 'Manga' }]
     },
     { timestamps: true }
 );

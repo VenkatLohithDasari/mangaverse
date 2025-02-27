@@ -1,8 +1,8 @@
-// models/User.ts
+// models/User.ts (extending your existing model)
 import mongoose, { Schema, model, Model } from 'mongoose';
 
 export interface IUser {
-    _id: string;
+    _id: mongoose.Types.ObjectId;
     name?: string;
     email?: string;
     image?: string;
