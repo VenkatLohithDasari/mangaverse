@@ -1,0 +1,106 @@
+// app/api/manga/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import dbConnect from '@/lib/mongoose';
+import Manga from '@/models/Manga';
+
+export async function GET(req: NextRequest) {
+    try {
+        await dbConnect();
+
+        const searchParams = req.nextUrl.searchParams;
+        const page = parseInt(searchParams.get('page') || '1');
+        const limit = parseInt(searchParams.get('limit') || '20');
+        const search = searchParams.get('search');
+        const genre = searchParams.get('genre');
+        const tag = searchParams.get('tag');
+        const status = searchParams.get('status');
+        const sort = searchParams.get('sort') || 'updatedAt';
+
+        // Build query
+        const query: any = {};
+
+        if (search) {
+            query.$text = { $search: search };
+        }
+
+        if (genre) {
+            query.genres = genre;
+        }
+
+        if (tag) {
+            query.tags = tag;
+        }
+
+        if (status) {
+            query.status = status;
+        }
+
+        // Build sort options
+        let sortOptions: any = {};
+
+        switch (sort) {
+            case 'title':
+                sortOptions = { title: 1 };
+                break;
+            case 'newest':
+                sortOptions = { createdAt: -1 };
+                break;
+            case 'popular':
+                sortOptions = { views: -1 };
+                break;
+            case 'rating':
+                sortOptions = { 'rating.average': -1 };
+                break;
+            case 'favorites':
+                sortOptions = { favoriteCount: -1 };
+                break;
+            default:
+                sortOptions = { updatedAt: -1 };
+                break;
+        }
+
+        const skip = (page - 1) * limit;
+
+        const [manga, total] = await Promise.all([
+            Manga.find(query)
+                .sort(sortOptions)
+                .skip(skip)
+                .limit(limit)
+                .select('title slug coverImage status genres tags rating views favoriteCount'),
+
+            Manga.countDocuments(query)
+        ]);
+
+        return NextResponse.json({
+            manga,
+            pagination: {
+                page,
+                limit,
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        });
+
+    } catch (error: any) {
+        console.error('Manga list error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+export async function POST(req: NextRequest) {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session || session.user.role !== 'admin') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        await dbConnect();
+
+        const body = await req.json();
+        const manga = await Manga.create(body);
+
+        return NextResponse.json(manga, { status: 201 });
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
